@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        section {
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #3498db;
+            color: #fff;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+        .client-details, .item-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .client-details div {
+            width: 48%;
+        }
+        .item-details div {
+            width: 100%;
+        }
+        .total-cost {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: center;
+        }
+        .bank-details {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .scrollable-section {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        .add-row-btn {
+            background-color: #2ecc71;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>INVOICE</h1>
+        <div>
+            <label for="invoiceNumber">Invoice NO. </label>
+            <input type="text" id="invoiceNumber">
+            <span id="issueDate"></span>
+        </div>
+    </header>
+
+    <section class="client-details">
+        <div>
+            <h2>Your Company Details</h2>
+            <p>Your Company Name</p>
+            <p>Your Address</p>
+            <p>Your Phone</p>
+            <p>Your Email</p>
+        </div>
+        <div>
+            <h2>Client Details</h2>
+            <label for="clientName">Client Name:</label>
+            <input type="text" id="clientName">
+            <label for="clientAddress">Client Address:</label>
+            <input type="text" id="clientAddress">
+            <label for="clientPhone">Client Phone:</label>
+            <input type="text" id="clientPhone">
+            <label for="clientEmail">Client Email:</label>
+            <input type="text" id="clientEmail">
+        </div>
+    </section>
+
+    <section class="item-details scrollable-section">
+        <table id="invoiceTable">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" class="item-description"></td>
+                    <td><input type="number" class="item-quantity" min="1" onchange="updateTotal(this)"></td>
+                    <td><input type="number" class="item-unit-price" min="0" step="0.01" onchange="updateTotal(this)"></td>
+                    <td><span class="item-total">0.00</span></td>
+                    <td><button type="button" class="add-row-btn" onclick="addRow()">+</button></td>
+                </tr>
+            </tbody>
+        </table>
+        
+  
+    </div>
+    </div>
+    </section>
+	<section>
+	<div class="total-cost">
+            <p>Total Cost (AUD): <span id="totalCost">0.00</span></p>
+			    <div class="bank-details">
+        <p>Our bank acocunt details- Name:JEWELrz BSB: 083-004 Acc: 714704376</p>
+	<section>
+
+
+
+
+    <script>
+        function addRow() {
+            const tableBody = document.getElementById('invoiceTable').getElementsByTagName('tbody')[0];
+            const newRow = tableBody.insertRow(tableBody.rows.length);
+            
+            const cell1 = newRow.insertCell(0);
+            cell1.innerHTML = '<input type="text" class="item-description">';
+
+            const cell2 = newRow.insertCell(1);
+            cell2.innerHTML = '<input type="number" class="item-quantity" min="1" onchange="updateTotal(this)">';
+
+            const cell3 = newRow.insertCell(2);
+            cell3.innerHTML = '<input type="number" class="item-unit-price" min="0" step="0.01" onchange="updateTotal(this)">';
+
+            const cell4 = newRow.insertCell(3);
+            cell4.innerHTML = '<span class="item-total">0.00</span>';
+
+            const cell5 = newRow.insertCell(4);
+            const addButton = document.createElement('button');
+            addButton.innerText = '+';
+            addButton.className = 'add-row-btn';
+            addButton.onclick = function() {
+                addRow();
+            };
+            cell5.appendChild(addButton);
+
+            updateTotalCost();
+        }
+
+        function deleteRow(button) {
+            const tableBody = document.getElementById('invoiceTable').getElementsByTagName('tbody')[0];
+            const rowIndex = button.parentNode.parentNode.rowIndex;
+            tableBody.deleteRow(rowIndex);
+            updateTotalCost();
+        }
+
+        function updateTotal(element) {
+            const row = element.parentNode.parentNode;
+            const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+            const unitPrice = parseFloat(row.querySelector('.item-unit-price').value) || 0;
+            const total = quantity * unitPrice;
+            row.querySelector('.item-total').innerText = total.toFixed(2);
+            updateTotalCost();
+        }
+
+        function updateTotalCost() {
+            const tableBody = document.getElementById('invoiceTable').getElementsByTagName('tbody')[0];
+            const rows = tableBody.getElementsByTagName('tr');
+            let totalCost = 0;
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByClassName('item-total')[0];
+                const totalCell = cells.innerText;
+                totalCost += parseFloat(totalCell);
+            }
+
+            document.getElementById('totalCost').innerText = '$' + totalCost.toFixed(2);
+        }
+
+        document.getElementById('issueDate').innerText = ' ' + new Date().toLocaleDateString();
+    </script>
+</body>
+</html>
